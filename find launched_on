@@ -1,1 +1,5 @@
+# This is a silly 'for' loop i made to get the "launched_on" compute node (a variable 
+# which Nova doesn't show) from the database for an instance in a particular state that is
+# not shown in the database (VERIFY_RESIZE in this case).
+
 # for i in `nova list --all-t |grep VERIFY_RESIZE| awk '{print $2}'`; do mysql -e "use nova;select * from instances where uuid='$i'\G" | egrep -i 'uuid|launched_on'; done
