@@ -1,0 +1,1 @@
+# for i in `nova list --all-t |grep VERIFY_RESIZE| awk '{print $2}'`; do mysql -e "use nova;select * from instances where uuid='$i'\G" | egrep -i 'uuid|launched_on'; done
