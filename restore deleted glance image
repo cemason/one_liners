@@ -1,0 +1,27 @@
+If a Glance image is deleted for an instance, errors will arise when resizing, migrating, and possibly even just rebooting that instance. This shows how to restore the image if a backing file still exists on the instance's hypervisor. This requires updating the database so proceed at your own risk!
+
+1. From infra node, get instance hypervisor name, image ID and name
+
+# nova show <instance uuid> |egrep "hypervisor_hostname|image"
+
+2. Database - check to make sure the image is really marked deleted
+
+# use glance; select * from images where id='<image id>'\G
+
+3. From the instance hypervisor, get disk info
+
+# cd /var/lib/nova/instances/<instance uuid>/
+# qemu-img info disk |grep "backing file"
+# stat <backing file>
+
+If it exists, great!
+
+4. Database changes - remove the old image (so we can create one with the same ID). Careful here.
+
+use glance; SET FOREIGN_KEY_CHECKS=0; UPDATE images SET id='xxx-<image id>' WHERE id='<image id>' LIMIT 1; SET FOREIGN_KEY_CHECKS=1;
+
+5. From the instance hypervisor, upload to glance an image with the backing file as source and specify the original ID
+
+glance image-create --progress --disk-format qcow2 --container-format bare --name '<instance name> (restored)' --file <backing file> --is-public true --id <image id>
+
+With this done resizes, migrations etc should be possible for those instances using the now-restored image.
