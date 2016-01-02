@@ -18,10 +18,10 @@ If it exists, great!
 
 4. Database changes - remove the old image (so we can create one with the same ID). Careful here.
 
-use glance; SET FOREIGN_KEY_CHECKS=0; UPDATE images SET id='xxx-<image id>' WHERE id='<image id>' LIMIT 1; SET FOREIGN_KEY_CHECKS=1;
+# use glance; SET FOREIGN_KEY_CHECKS=0; UPDATE images SET id='xxx-<image id>' WHERE id='<image id>' LIMIT 1; SET FOREIGN_KEY_CHECKS=1;
 
 5. From the instance hypervisor, upload to glance an image with the backing file as source and specify the original ID
 
-glance image-create --progress --disk-format qcow2 --container-format bare --name '<instance name> (restored)' --file <backing file> --is-public true --id <image id>
+# glance image-create --progress --disk-format qcow2 --container-format bare --name '<instance name> (restored)' --file <backing file> --is-public true --id <image id>
 
 With this done resizes, migrations etc should be possible for those instances using the now-restored image.
